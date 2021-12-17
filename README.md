@@ -1,0 +1,1 @@
+Weather forecast web app created using ReactJS and CSS. It utilizies an API that displays the current weather readings for each city around the world. Users will be able to get current weather conditions in their desired city of choice.
