@@ -1,16 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Forecast from './Forecast';
 import Home from './Home';
-import { HashRouter as Router, Route, Switch, IndexRoute, hashHistory, Link } from 'react-router-dom';
+
+
 
 
 
 
 ReactDOM.render(
   <React.StrictMode>
-    <Home>
-    </Home>
+    <div className="background-image"></div>
+ <Home />
   </React.StrictMode>,
   document.getElementById('root')
 );

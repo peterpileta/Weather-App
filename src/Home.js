@@ -2,104 +2,73 @@ import './home.css'
 import React, {useState} from 'react';
 import { createContext } from 'react';
 import Forecast from './Forecast';
-
+export const myContext = createContext();
 
 function Home(props) {
 
 const [weather, setWeather] = useState();
-const [input, setInput] = useState({
-  city: '',
-  country: '',
-});
-const [APIresponse, setResponse] = useState({status:''})
+const [input, setInput] = useState();
 
-{/* make API weather data request with fetch*/}
+
+/* make API weather data request with fetch*/
 
 function fetchData() {
 
-if (input.city == '' || input.country == '') {alert("Please fill country and city fields")
+if (input === null) {alert("Please type city name")
 return;
 }
 
- let weatherAPI = `https://community-open-weather-map.p.rapidapi.com/forecast?q=${input.city},${input.country}%2Cus&units=metric&cnt=1`;
+ let weatherAPI = `https://api.openweathermap.org/data/2.5/weather?q=${input}&appid=${process.env.REACT_APP_API_KEY}&units=imperial`;
     
  fetch(weatherAPI, {
-      "method": "GET",
-      "headers": {
-          "x-rapidapi-key": process.env.REACT_APP_API_KEY,
-          "x-rapidapi-host": "community-open-weather-map.p.rapidapi.com"
-      }
+      "method": "GET"
     }).then((response) => {
     if (response.ok){
-    setResponse({...APIresponse, status: response.status})
     return response.json()
     }
     else {
-      setResponse({...APIresponse, status: response.status})
+      setWeather({cod: 404})
       throw new Error('Error: could not fetch weather API data')
     }
     }).then((response) => {
-      setWeather(response)
+      setWeather({...response})
     }).catch((error)=>{
+    
     })
+
   }
 
   function apiError() {
     return (
     <div className="contentLayout">
-    <span className="temp-stat">Couldn't retrieve API data (HTTP {APIresponse.status})</span>
+    <span className="temp-stat">Couldn't retrieve API data (Check for spelling errors)</span>
     </div>
 
     )
   }
  
-  function enterInput() {
-    return (
-      <div className="contentLayout">
-      <span className="temp-stat">Enter location to check its current weather</span>
-      </div>
-    )
+
+  function statusIsOK() {
+    if (weather?.cod >= 200 && weather?.cod <= 299) return true;
+    else return false;
+   
   }
 
 
-function statusIsOK() {
-  if (parseInt(APIresponse.status) < 200 || parseInt(APIresponse.status) > 299) return false;
-  return true;
-}
-
-    console.log(weather)
 return(
-  <>
- {/* Topnav*/}
-
+  <div className='main-container'>
         <h2>Weather Stats Website</h2>
-        
         <div className="topnav">
-       
-          
-          <input className="location-input" type="text" placeholder='City' value= {input.city} onChange={(e) => setInput({...input, city: e.target.value})} name="search" />
-          <input className="location-input" type="text" placeholder='Country'  value={input.country} onChange={(e) => setInput({...input, country: e.target.value})} name="search" />
-          <button type="button" onClick = {(e)=> {fetchData()}}></button>
+          <input type="text" placeholder='city' value= {input} onChange={(e) => setInput(e.target.value)} name="search" />
+          <button type="button" onClick = {(e)=> {fetchData()}}>Search</button>
         </div> 
-
  {/* Pass context to Forecast component*/}
-
-    {(APIresponse.status != '' && statusIsOK()) &&
-        <Forecast weather = {weather}/>
-
-    }
-
-  {/* Enter input*/}
-
-     {(APIresponse.status == '') && enterInput()}
-
+<myContext.Provider value = {weather}>
+  {statusIsOK() &&  <Forecast/>}
+</myContext.Provider>
   {/* API call error */}
-
-     {APIresponse.status == '' || (!statusIsOK() &&  apiError())}
-       
-  {/* Footer */}
-        <footer><span>Author: Peter Pileta  -  </span><a href="https://github.com/peterpileta">GitHub</a></footer>
-      </>
+     {weather !== undefined && !statusIsOK() &&  apiError()}
+      </div>
     )
 }
 

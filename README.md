@@ -1,0 +1,1 @@
+Simple weather web-app project made with React.
