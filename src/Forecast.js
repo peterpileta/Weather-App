@@ -1,19 +1,27 @@
-import React, { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { myContext } from './Home';
-function Forecast() {
+import pIcon from './images/pressure-icon.png'
+import tIcon from './images/temp-icon.png'
+import hIcon from './images/hIcon.png'
+import wIcon from './images/wIcon.webp'
+function Forecast({status}) {
 
 const weather = useContext(myContext);
+const [fadeIn, setFadein] = useState('');
 
-const weatherDesc = weather.weather[0].description;
-const weatherStats = weather.main;
-const weatherCityName = weather.name;
-const weatherCountryName = weather.sys.country;
+const weatherDesc = weather?.weather[0]?.description;
+const weatherStats = weather?.main;
+const weatherCityName = weather?.name;
+const weatherCountryName = weather?.sys?.country;
    
 function capitalizeFirstLetter(string) {
+    if(!string) return
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+
 function getCountryName(countryname) {
+    if(!countryname) return
     const countryArray = [ 
         {name: 'Afghanistan', code: 'AF'}, 
         {name: 'Åland Islands', code: 'AX'}, 
@@ -266,31 +274,30 @@ function getCountryName(countryname) {
 
 return (<>
  
-    {(weather === undefined) || 
-      <div className='forecast-layout'>
-          <span className="weather-description">{capitalizeFirstLetter(weatherDesc)} in {weatherCityName}, {getCountryName(weatherCountryName)}</span>
+    {<div className='forecast-layout' style={(weather && status)? {opacity: '1'}: {opacity: '0'}}>
+          <span className="weather-description">{capitalizeFirstLetter(weather && weatherDesc)} in {weather && weatherCityName}, {getCountryName(weather && weatherCountryName)}</span>
           
-          <div className="forecast-flex">
+          <div className='forecast-flex'>
       
               <div className="flex-item">
-                  <span>Feels like</span>
-                  <span>{weatherStats.feels_like}˚F</span>
+                  <span>Feels like <img src={tIcon} alt="" /></span>
+                  <span>{weatherStats?.feels_like}˚F</span>
                   
               </div>
       
               <div className="flex-item">
-                  <span>Humidity</span>
-                  <span>{weatherStats.humidity}%</span>
+                  <span>Humidity <img src={hIcon} alt="" /></span>
+                  <span>{weatherStats?.humidity}%</span>
               </div>
       
               <div className="flex-item">
-                  <span>Pressure</span>
-                  <span>{weatherStats.pressure} Pa</span>
+                  <span>Pressure <img src={pIcon} alt="" /></span>
+                  <span>{weatherStats?.pressure} Pa</span>
               </div>
       
               <div className="flex-item">
-                  <span>Wind speed</span>
-                  <span>{weather.wind.speed} m/s</span>
+                  <span>Wind speed <img src={wIcon} alt="" /></span>
+                  <span>{weather?.wind?.speed} m/s</span>
               </div>
           
       </div>
